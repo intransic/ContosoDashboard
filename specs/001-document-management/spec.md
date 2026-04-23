@@ -71,7 +71,7 @@ Users need to manage ownership, sharing, and project associations so documents s
 - **FR-003**: System MUST support PDF, Microsoft Office documents, text files, JPEG, and PNG file types, and reject unsupported file types.
 - **FR-004**: System MUST reject files larger than 25 MB and display a clear error message when size limits are exceeded.
 - **FR-005**: System MUST store document metadata including upload date/time, uploader, file size, file type, title, category, associated project, and tags.
-- **FR-006**: System MUST validate uploaded files before storage and prevent unsafe files from being stored.
+- **FR-006**: System MUST validate uploaded files before storage and prevent unsafe files from being stored. This includes a basic file signature check that rejects known dangerous file types (e.g., executables, scripts) based on magic number validation.
 - **FR-007**: System MUST store uploaded files securely outside public web content paths and enforce authorization before file access.
 - **FR-008**: System MUST provide a My Documents view with sorting by title, upload date, category, and file size.
 - **FR-009**: System MUST provide filtering of document lists by category, associated project, and date range.
@@ -82,13 +82,15 @@ Users need to manage ownership, sharing, and project associations so documents s
 - **FR-014**: System MUST allow document owners to delete their own documents after confirmation.
 - **FR-015**: System MUST allow Project Managers to delete any project-related document for projects they manage.
 - **FR-016**: System MUST allow document owners to share documents with specific users or teams.
-- **FR-017**: System MUST notify recipients in-app when a document is shared with them.
+- **FR-017**: System MUST notify recipients in-app when a document is shared with them. (Email notifications are out of scope for training-only implementation.)
 - **FR-018**: System MUST show project-related documents on the relevant project page for all authorized team members.
 - **FR-019**: System MUST allow documents to be attached from task details and automatically associate attachments with the task's project.
 - **FR-020**: System MUST add a Recent Documents widget and document counts to the dashboard summary.
 - **FR-021**: System MUST log document-related activity including uploads, downloads, deletions, shares, and metadata changes.
 - **FR-022**: System MUST enforce role-based access control so users only see documents they are authorized to access.
 - **FR-023**: System MUST keep document management working offline without cloud storage dependencies.
+- **FR-024**: System MUST enforce per-user storage quotas and reject uploads when the limit is exceeded.
+- **FR-025**: System MUST enforce total system storage quotas and notify administrators when storage is running low.
 
 ### Key Entities *(include if feature involves data)*
 
@@ -97,6 +99,16 @@ Users need to manage ownership, sharing, and project associations so documents s
 - **DocumentCategory**: Represents a user-selected category from the predefined list used for browsing, filtering, and reporting.
 
 ## Success Criteria *(mandatory)*
+
+## Clarifications
+
+### Session 2026-04-23
+
+- Q: How should the system handle virus/malware scanning for uploaded files? → A: Implement basic signature check - Add a basic file signature check that rejects known dangerous file types (e.g., executables, scripts) based on magic number validation.
+- Q: Should the system implement storage quota limits? → A: Both per-user and total quotas - Implement both per-user and total quotas with configurable limits.
+- Q: Should the system send email notifications for document sharing and project document events? → A: In-app only (training) - In-app notifications only, no email for training simplicity.
+
+---
 
 ### Measurable Outcomes
 
