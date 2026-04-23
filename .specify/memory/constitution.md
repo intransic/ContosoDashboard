@@ -1,50 +1,58 @@
-# [PROJECT_NAME] Constitution
-<!-- Example: Spec Constitution, TaskFlow Constitution, etc. -->
+<!--
+Version change: none → 1.0.0
+Modified principles: added all five principles for training, security, specification, simplicity, and observability
+Added sections: Training Constraints, Development Workflow
+Removed sections: none
+Templates requiring updates:
+- .specify/templates/plan-template.md ✅ reviewed, no constitution-driven update required
+- .specify/templates/spec-template.md ✅ reviewed, no constitution-driven update required
+- .specify/templates/tasks-template.md ✅ reviewed, no constitution-driven update required
+- .specify/templates/constitution-template.md ✅ no update required for generated content
+Follow-up TODOs: none
+-->
+
+# ContosoDashboard Constitution
 
 ## Core Principles
 
-### [PRINCIPLE_1_NAME]
-<!-- Example: I. Library-First -->
-[PRINCIPLE_1_DESCRIPTION]
-<!-- Example: Every feature starts as a standalone library; Libraries must be self-contained, independently testable, documented; Clear purpose required - no organizational-only libraries -->
+### I. Training Integrity
+All changes MUST preserve the repository’s purpose as an offline training application. The project MUST remain safe for learners by avoiding production-only assumptions, keeping mock authentication and LocalDB isolation intact, and clearly documenting any limits of the training implementation.
 
-### [PRINCIPLE_2_NAME]
-<!-- Example: II. CLI Interface -->
-[PRINCIPLE_2_DESCRIPTION]
-<!-- Example: Every library exposes functionality via CLI; Text in/out protocol: stdin/args → stdout, errors → stderr; Support JSON + human-readable formats -->
+### II. Security by Design
+Every feature MUST enforce authorization and protect against common web risks such as IDOR and unauthorized data access. Security behavior in this repository is explicitly training-focused: mock implementations are allowed for learning, but production-grade requirements MUST be documented as out of scope.
 
-### [PRINCIPLE_3_NAME]
-<!-- Example: III. Test-First (NON-NEGOTIABLE) -->
-[PRINCIPLE_3_DESCRIPTION]
-<!-- Example: TDD mandatory: Tests written → User approved → Tests fail → Then implement; Red-Green-Refactor cycle strictly enforced -->
+### III. Specification-First Development
+All work MUST begin with a Spec Kit feature specification that captures user scenarios, acceptance criteria, and measurable outcomes. Design decisions and implementation plans MUST be derived from the specification before code is written.
 
-### [PRINCIPLE_4_NAME]
-<!-- Example: IV. Integration Testing -->
-[PRINCIPLE_4_DESCRIPTION]
-<!-- Example: Focus areas requiring integration tests: New library contract tests, Contract changes, Inter-service communication, Shared schemas -->
+### IV. Simplicity and Clarity
+Architecture, data models, and UI flows MUST remain as simple as possible for learners while still demonstrating best practices. The repository MUST avoid unnecessary abstractions, external dependencies, and complexity that would obscure the training value.
 
-### [PRINCIPLE_5_NAME]
-<!-- Example: V. Observability, VI. Versioning & Breaking Changes, VII. Simplicity -->
-[PRINCIPLE_5_DESCRIPTION]
-<!-- Example: Text I/O ensures debuggability; Structured logging required; Or: MAJOR.MINOR.BUILD format; Or: Start simple, YAGNI principles -->
+### V. Observability and Maintainability
+Every feature MUST include the minimum required observability, documentation, and separation of concerns needed for debugging and future learning. Code changes MUST be accompanied by updated guidance, and runtime behavior MUST be explainable to trainees.
 
-## [SECTION_2_NAME]
-<!-- Example: Additional Constraints, Security Requirements, Performance Standards, etc. -->
+## Training Constraints
 
-[SECTION_2_CONTENT]
-<!-- Example: Technology stack requirements, compliance standards, deployment policies, etc. -->
+This repository is explicitly a training implementation and is NOT production-ready. The following constraints are mandatory:
+- Authentication is mock-only and designed for educational scenarios, not for real-world identity providers.
+- Data storage MUST remain local (SQL Server LocalDB or equivalent training-safe storage); external cloud dependencies are prohibited in core training scenarios.
+- Production migration pathways may be described, but production system assumptions MUST be separated from the training codebase.
+- Any addition that depends on external services or enterprise infrastructure MUST include a clear training-only disclaimer.
 
-## [SECTION_3_NAME]
-<!-- Example: Development Workflow, Review Process, Quality Gates, etc. -->
+## Development Workflow
 
-[SECTION_3_CONTENT]
-<!-- Example: Code review requirements, testing gates, deployment approval process, etc. -->
+Development MUST follow a feature-driven workflow with spec, plan, and task artifacts:
+- Create and maintain feature specs, plans, and tasks in the Spec Kit folder structure.
+- Use feature branches and PR review for all changes.
+- Link each PR to the Constitution principles that are most relevant to the change.
+- Update README or training guidance whenever a change alters the learning path, security assumptions, or runtime behavior.
 
 ## Governance
-<!-- Example: Constitution supersedes all other practices; Amendments require documentation, approval, migration plan -->
 
-[GOVERNANCE_RULES]
-<!-- Example: All PRs/reviews must verify compliance; Complexity must be justified; Use [GUIDANCE_FILE] for runtime development guidance -->
+This Constitution supersedes informal practices in the repository. Amendments MUST be documented in this file and reviewed before merging.
+- Amendments that redefine principles or add new governance obligations MUST use semantic versioning with a major bump.
+- Amendments that add new sections, expand workflow expectations, or strengthen procedure MUST use a minor bump.
+- Clarifications, wording improvements, and non-substantive refinements MUST use a patch bump.
+- Every PR affecting core behavior or training guidance MUST reference the applicable Constitution principles and explain how compliance is maintained.
+- Reviewers MUST verify that changes preserve the repository’s training scope and do not introduce hidden production assumptions.
 
-**Version**: [CONSTITUTION_VERSION] | **Ratified**: [RATIFICATION_DATE] | **Last Amended**: [LAST_AMENDED_DATE]
-<!-- Example: Version: 2.1.1 | Ratified: 2025-06-13 | Last Amended: 2025-07-16 -->
+**Version**: 1.0.0 | **Ratified**: 2026-04-23 | **Last Amended**: 2026-04-23
