@@ -43,10 +43,12 @@ public class Project
         get
         {
             if (Tasks == null || !Tasks.Any()) return 0;
-            var completedCount = Tasks.Count(t => t.Status == TaskStatus.Completed);
+            var completedCount = Tasks.Count(static t => t.Status == TaskStatus.Completed);
             return (int)((double)completedCount / Tasks.Count * 100);
         }
     }
+
+    public int Id { get; internal set; }
 }
 
 public enum ProjectStatus

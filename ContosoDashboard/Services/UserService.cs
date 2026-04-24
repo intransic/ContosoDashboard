@@ -13,6 +13,7 @@ public interface IUserService
     Task<bool> UpdateAvailabilityStatusAsync(int userId, AvailabilityStatus status);
     Task<List<User>> GetTeamMembersAsync(int userId);
     Task<List<User>> GetAllUsersAsync();
+    Task<User> GetCurrentUserAsync(); // Ensure this matches your return type
 }
 
 public class UserService : IUserService
@@ -76,7 +77,7 @@ public class UserService : IUserService
         // Input validation
         if (!string.IsNullOrWhiteSpace(user.DisplayName))
             existingUser.DisplayName = user.DisplayName;
-        
+
         // Validate phone number format if provided
         if (!string.IsNullOrWhiteSpace(user.PhoneNumber))
         {
@@ -91,14 +92,14 @@ public class UserService : IUserService
         // Validate and sanitize department and job title
         if (!string.IsNullOrWhiteSpace(user.Department) && user.Department.Length <= 100)
             existingUser.Department = user.Department;
-        
+
         if (!string.IsNullOrWhiteSpace(user.JobTitle) && user.JobTitle.Length <= 100)
             existingUser.JobTitle = user.JobTitle;
-        
+
         // Validate profile photo URL
         if (!string.IsNullOrWhiteSpace(user.ProfilePhotoUrl))
         {
-            if (Uri.TryCreate(user.ProfilePhotoUrl, UriKind.Absolute, out var uri) && 
+            if (Uri.TryCreate(user.ProfilePhotoUrl, UriKind.Absolute, out var uri) &&
                 (uri.Scheme == Uri.UriSchemeHttp || uri.Scheme == Uri.UriSchemeHttps) &&
                 user.ProfilePhotoUrl.Length <= 500)
             {
@@ -143,7 +144,14 @@ public class UserService : IUserService
     public async Task<List<User>> GetAllUsersAsync()
     {
         return await _context.Users
-            .OrderBy(u => u.DisplayName)
+            .OrderBy(static u => u.DisplayName)
             .ToListAsync();
     }
+
+    public async Task<User> GetCurrentUserAsync()
+    {
+        // Your implementation logic here
+        throw new NotImplementedException();
+    }
+
 }

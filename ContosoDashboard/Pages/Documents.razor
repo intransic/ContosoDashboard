@@ -1,0 +1,502 @@
+@page "/documents"
+@using ContosoDashboard.Models
+@using ContosoDashboard.Services
+@inject IDocumentService DocumentService
+@inject IProjectService ProjectService
+@inject IUserService UserService
+@inject NavigationManager Navigation
+@using Microsoft.AspNetCore.Components.Forms    
+
+
+<PageTitle>My Documents - ContosoDashboard</PageTitle>
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <h1 class="mb-4">My Documents</h1>
+        </div>
+    </div>
+
+    @if (loading)
+    {
+        <div class="text-center">
+            <div class="spinner-border" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+        </div>
+    }
+    else
+    {
+        <!-- Upload Section -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">Upload New Document</h5>
+                    </div>
+                    <div class="card-body">
+                        <EditForm Model="@uploadRequest" OnValidSubmit="@HandleUpload">
+                            <DataAnnotationsValidator />
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Title *</label>
+                                    <InputText @bind-Value="uploadRequest.Title" class="form-control" required />
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Category *</label>
+                                    <InputSelect @bind-Value="uploadRequest.Category" class="form-select" required>
+                                        <option value="">Select Category</option>
+                                        @foreach (var category in DocumentCategories.All)
+                                        {
+                                            <option value="@category">@category</option>
+                                        }
+                                    </InputSelect>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Description</label>
+                                    <InputText @bind-Value="uploadRequest.Description" class="form-control" />
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Associated Project</label>
+                                    <InputSelect @bind-Value="uploadRequest.ProjectId" class="form-select">
+                                        <option value="">No Project</option>
+                                        @foreach (var project in projects)
+                                        {
+                                            <option value="@project.Id">@project.Name</option>
+                                        }
+                                    </InputSelect>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Tags (comma-separated)</label>
+                                    <InputText @bind-Value="uploadRequest.Tags" class="form-control" placeholder="e.g., report, q1, important" />
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">File *</label>
+                                    <InputFile OnChange="@HandleFileSelected" class="form-control" accept=".pdf,.docx,.doc,.xlsx,.xls,.pptx,.ppt,.txt,.jpg,.jpeg,.png" />
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-12">
+                                    <button type="submit" class="btn btn-primary" disabled="@uploading">
+                                        @(uploading ? "Uploading..." : "Upload Document")
+                                    </button>
+                                </div>
+                            </div>
+                        </EditForm>
+                        
+                        @if (!string.IsNullOrEmpty(uploadMessage))
+                        {
+                            <div class="alert mt-3 @(uploadSuccess ? "alert-success" : "alert-danger")">
+                                @uploadMessage
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Filter Section -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-3">
+                                <label class="form-label">Filter by Category</label>
+                                <select class="form-select" @bind="selectedCategory">
+                                    <option value="">All Categories</option>
+                                    @foreach (var category in DocumentCategories.All)
+                                    {
+                                        <option value="@category">@category</option>
+                                    }
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">Filter by Project</label>
+                                <select class="form-select" @bind="selectedProjectId">
+                                    <option value="">All Projects</option>
+                                    @foreach (var project in projects)
+                                    {
+                                        <option value="@project.Id">@project.Name</option>
+                                    }
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">Sort By</label>
+                                <select class="form-select" @bind="sortBy">
+                                    <option value="CreatedAt">Date</option>
+                                    <option value="Title">Title</option>
+                                    <option value="Category">Category</option>
+                                    <option value="FileSize">Size</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">&nbsp;</label>
+                                <button class="btn btn-secondary w-100" @onclick="ApplyFilters">Apply Filters</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Documents List -->
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">Your Documents (@documents.Count)</h5>
+                        <div class="input-group" style="max-width: 300px;">
+                            <input type="text" class="form-control" placeholder="Search documents..." @bind="searchQuery" />
+                            <button class="btn btn-outline-secondary" @onclick="SearchDocuments">Search</button>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        @if (documents.Count == 0)
+                        {
+                            <div class="text-center text-muted py-5">
+                                <p>No documents found. Upload your first document above.</p>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>Title</th>
+                                            <th>Category</th>
+                                            <th>Project</th>
+                                            <th>Size</th>
+                                            <th>Uploaded</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var doc in documents)
+                                        {
+                                            <tr>
+                                                <td>
+                                                    <strong>@doc.Title</strong>
+                                                    @if (!string.IsNullOrEmpty(doc.Description))
+                                                    {
+                                                        <br /><small class="text-muted">@doc.Description</small>
+                                                    }
+                                                </td>
+                                                <td>
+                                                    <span class="badge bg-info">@doc.Category</span>
+                                                </td>
+                                                <td>
+                                                    @if (doc.Project != null)
+                                                    {
+                                                        <span>@doc.Project.Name</span>
+                                                    }
+                                                    else
+                                                    {
+                                                        <span class="text-muted">-</span>
+                                                    }
+                                                </td>
+                                                <td>@FormatFileSize(doc.FileSize)</td>
+                                                <td>@doc.CreatedAt.ToString("MMM dd, yyyy")</td>
+                                                <td>
+                                                    <div class="btn-group btn-group-sm">
+                                                        <button class="btn btn-outline-primary" @onclick="() => DownloadDocument(doc)" title="Download">
+                                                            <i class="bi bi-download"></i> Download
+                                                        </button>
+                                                        <button class="btn btn-outline-warning" @onclick="() => EditDocument(doc)" title="Edit">
+                                                            <i class="bi bi-pencil"></i> Edit
+                                                        </button>
+                                                        <button class="btn btn-outline-success" @onclick="() => ShareDocument(doc)" title="Share">
+                                                            <i class="bi bi-share"></i> Share
+                                                        </button>
+                                                        <button class="btn btn-outline-danger" @onclick="() => ConfirmDelete(doc)" title="Delete">
+                                                            <i class="bi bi-trash"></i> Delete
+                                                        </button>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+@if (showDeleteConfirmation)
+{
+    <div class="modal fade show d-block" tabindex="-1" style="background-color: rgba(0,0,0,0.5);">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Confirm Delete</h5>
+                    <button type="button" class="btn-close" @onclick="CancelDelete"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Are you sure you want to delete "@documentToDelete?.Title"?</p>
+                    <p class="text-muted">This action cannot be undone.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" @onclick="CancelDelete">Cancel</button>
+                    <button type="button" class="btn btn-danger" @onclick="DeleteDocument">Delete</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@if (showShareDialog)
+{
+    <div class="modal fade show d-block" tabindex="-1" style="background-color: rgba(0,0,0,0.5);">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Share Document</h5>
+                    <button type="button" class="btn-close" @onclick="CancelShare"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Share "@documentToShare?.Title" with:</p>
+                    <select class="form-select" @bind="selectedShareUserId">
+                        <option value="">Select User</option>
+                        @foreach (var user in allUsers.Where(u => u.UserId != currentUserId))
+                        {
+                            <option value="@user.UserId">@user.DisplayName (@user.Email)</option>
+                        }
+                    </select>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" @onclick="CancelShare">Cancel</button>
+                    <button type="button" class="btn btn-primary" @onclick="ConfirmShare">Share</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    private bool loading = true;
+    private bool uploading = false;
+    private string uploadMessage = string.Empty;
+    private bool uploadSuccess = false;
+
+    private List<Document> documents = new();
+    private List<Project> projects = new();
+    private List<User> allUsers = new();
+    private int currentUserId = 1;
+
+    private DocumentUploadRequest uploadRequest = new();
+    private IBrowserFile? selectedFile;
+
+    private string selectedCategory = string.Empty;
+    private int? selectedProjectId;
+    private string sortBy = "CreatedAt";
+    private string searchQuery = string.Empty;
+
+    private bool showDeleteConfirmation = false;
+    private Document? documentToDelete;
+
+    private bool showShareDialog = false;
+    private Document? documentToShare;
+    private int selectedShareUserId;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var user = await UserService.GetCurrentUserAsync();
+        if (user != null)
+        {
+            currentUserId = user.UserId;
+        }
+
+        //projects = (await ProjectService.GetProjectsAsync());
+        //allUsers = (await UserService.GetUsersAsync()).ToList();
+
+        await LoadDocuments();
+        loading = false;
+    }
+
+    private async Task LoadDocuments()
+    {
+        var filter = new DocumentFilter
+        {
+            Category = string.IsNullOrEmpty(selectedCategory) ? null : selectedCategory,
+            ProjectId = selectedProjectId,
+            SortBy = sortBy,
+            SortDescending = true
+        };
+
+        documents = (await DocumentService.GetUserDocumentsAsync(currentUserId, filter)).ToList();
+    }
+
+    private async Task HandleFileSelected(InputFileChangeEventArgs e) => selectedFile = e.File;
+
+    private async Task HandleUpload()
+    {
+        if (selectedFile == null)
+        {
+            uploadMessage = "Please select a file to upload.";
+            uploadSuccess = false;
+            return;
+        }
+
+        uploading = true;
+        uploadMessage = string.Empty;
+
+        try
+        {
+            uploadRequest.File = selectedFile;
+            var doc = await DocumentService.UploadAsync(uploadRequest, currentUserId);
+            
+            uploadMessage = "Document uploaded successfully!";
+            uploadSuccess = true;
+            
+            // Reset form
+            uploadRequest = new DocumentUploadRequest();
+            selectedFile = null;
+            
+            // Reload documents
+            await LoadDocuments();
+        }
+        catch (Exception ex)
+        {
+            uploadMessage = $"Error: {ex.Message}";
+            uploadSuccess = false;
+        }
+        finally
+        {
+            uploading = false;
+        }
+    }
+
+    private async Task ApplyFilters()
+    {
+        await LoadDocuments();
+    }
+
+    private async Task SearchDocuments()
+    {
+        if (string.IsNullOrWhiteSpace(searchQuery))
+        {
+            await LoadDocuments();
+        }
+        else
+        {
+            documents = (await DocumentService.SearchAsync(searchQuery, currentUserId)).ToList();
+        }
+    }
+
+    private async Task DownloadDocument(Document doc)
+    {
+        // Navigate to download endpoint
+        Navigation.NavigateTo($"/api/documents/download?id={doc.Id}", true);
+    }
+
+    private void EditDocument(Document doc)
+    {
+        // TODO: Implement edit dialog
+    }
+
+    private void ShareDocument(Document doc)
+    {
+        documentToShare = doc;
+        selectedShareUserId = 0;
+        showShareDialog = true;
+    }
+
+    private void CancelShare()
+    {
+        showShareDialog = false;
+        documentToShare = null;
+    }
+
+    private async Task ConfirmShare()
+    {
+        if (documentToShare == null || selectedShareUserId == 0)
+            return;
+
+        try
+        {
+            await DocumentService.ShareAsync(documentToShare.Id, selectedShareUserId, currentUserId);
+            showShareDialog = false;
+            documentToShare = null;
+        }
+        catch (Exception ex)
+        {
+            uploadMessage = $"Error sharing: {ex.Message}";
+            uploadSuccess = false;
+        }
+    }
+
+    private void ConfirmDelete(Document doc)
+    {
+        documentToDelete = doc;
+        showDeleteConfirmation = true;
+    }
+
+    private void CancelDelete()
+    {
+        showDeleteConfirmation = false;
+        documentToDelete = null;
+    }
+
+    private async Task DeleteDocument()
+    {
+        if (documentToDelete == null)
+            return;
+
+        try
+        {
+            await DocumentService.DeleteAsync(documentToDelete.Id, currentUserId);
+            showDeleteConfirmation = false;
+            documentToDelete = null;
+            await LoadDocuments();
+        }
+        catch (Exception ex)
+        {
+            uploadMessage = $"Error deleting: {ex.Message}";
+            uploadSuccess = false;
+        }
+    }
+
+    private string FormatFileSize(long bytes)
+    {
+        string[] sizes = { "B", "KB", "MB", "GB" };
+        int order = 0;
+        double size = bytes;
+        while (size >= 1024 && order < sizes.Length - 1)
+        {
+            order++;
+            size /= 1024;
+        }
+        return $"{size:0.##} {sizes[order]}";
+    }
+}
+
+/// <summary>
+/// Adapter to convert IFileFile to IBrowserFile interface
+/// </summary>
+public class BrowserFileAdapter : IBrowserFile
+{
+    private readonly Microsoft.AspNetCore.Http.IFormFile _file;
+
+    public BrowserFileAdapter(Microsoft.AspNetCore.Http.IFormFile file)
+    {
+        _file = file;
+    }
+
+    public string Name => _file.FileName;
+    public long Size => _file.Length;
+    public string ContentType => _file.ContentType;
+
+    public Stream OpenReadStream(long maxAllowedSize = 512000)
+    {
+        return _file.OpenReadStream(maxAllowedSize);
+    }
+}

@@ -24,8 +24,8 @@ description: "Task list for Document Upload and Management feature"
 
 **Purpose**: Project initialization and basic structure
 
-- [ ] T001 Create AppData/uploads directory structure for document storage in ContosoDashboard/AppData/
-- [ ] T002 Add DocumentSettings configuration section to appsettings.json with MaxFileSize, TotalStorageQuota, AllowedFileExtensions, QuotaWarningThreshold
+- [X] T001 Create AppData/uploads directory structure for document storage in ContosoDashboard/AppData/
+- [X] T002 Add DocumentSettings configuration section to appsettings.json with MaxFileSize, TotalStorageQuota, AllowedFileExtensions, QuotaWarningThreshold
 
 ---
 
@@ -35,13 +35,13 @@ description: "Task list for Document Upload and Management feature"
 
 **⚠️ CRITICAL**: No user story work can begin until this phase is complete
 
-- [ ] T003 Create Document entity model in ContosoDashboard/Models/Document.cs with all fields from data-model.md
-- [ ] T004 Create DocumentShare entity model in ContosoDashboard/Models/DocumentShare.cs with all fields from data-model.md
-- [ ] T005 Add StorageUsed and StorageQuota fields to User entity in ContosoDashboard/Models/User.cs
-- [ ] T006 Update ApplicationDbContext in ContosoDashboard/Data/ApplicationDbContext.cs to add Document and DocumentShare DbSets with relationships
-- [ ] T007 [P] Create IFileStorageService interface in ContosoDashboard/Services/IFileStorageService.cs with UploadAsync, DeleteAsync, DownloadAsync, GetUrlAsync, GetStorageUsedAsync methods
-- [ ] T008 [P] Create LocalFileStorageService implementation in ContosoDashboard/Services/LocalFileStorageService.cs implementing IFileStorageService for local filesystem storage
-- [ ] T009 Create FileSignatureValidator in ContosoDashboard/Services/FileSignatureValidator.cs to validate file magic numbers and reject dangerous file types
+- [X] T003 Create Document entity model in ContosoDashboard/Models/Document.cs with all fields from data-model.md
+- [X] T004 Create DocumentShare entity model in ContosoDashboard/Models/DocumentShare.cs with all fields from data-model.md
+- [X] T005 Add StorageUsed and StorageQuota fields to User entity in ContosoDashboard/Models/User.cs
+- [X] T006 Update ApplicationDbContext in ContosoDashboard/Data/ApplicationDbContext.cs to add Document and DocumentShare DbSets with relationships
+- [X] T007 [P] Create IFileStorageService interface in ContosoDashboard/Services/IFileStorageService.cs with UploadAsync, DeleteAsync, DownloadAsync, GetUrlAsync, GetStorageUsedAsync methods
+- [X] T008 [P] Create LocalFileStorageService implementation in ContosoDashboard/Services/LocalFileStorageService.cs implementing IFileStorageService for local filesystem storage
+- [X] T009 Create FileSignatureValidator in ContosoDashboard/Services/FileSignatureValidator.cs to validate file magic numbers and reject dangerous file types
 
 **Checkpoint**: Foundation ready - user story implementation can now begin in parallel
 
@@ -55,14 +55,14 @@ description: "Task list for Document Upload and Management feature"
 
 ### Implementation for User Story 1
 
-- [ ] T010 [P] [US1] Create IDocumentService interface in ContosoDashboard/Services/IDocumentService.cs with UploadAsync, GetUserDocumentsAsync, GetProjectDocumentsAsync methods
-- [ ] T011 [P] [US1] Create DocumentService implementation in ContosoDashboard/Services/DocumentService.cs implementing IDocumentService with upload logic, file validation, storage quota checks
-- [ ] T012 [US1] Create IQuotaService interface in ContosoDashboard/Services/IQuotaService.cs with CanUploadAsync, GetUserStorageUsedAsync, GetUserStorageQuotaAsync, GetTotalStorageUsedAsync methods
-- [ ] T013 [US1] Create QuotaService implementation in ContosoDashboard/Services/QuotaService.cs implementing IQuotaService with quota validation logic
-- [ ] T014 [US1] Create DocumentController in ContosoDashboard/Controllers/DocumentController.cs with POST /api/documents/upload endpoint for file upload
-- [ ] T015 [US1] Add authorization attributes to DocumentController for authenticated users
-- [ ] T016 [US1] Create Documents.razor page in ContosoDashboard/Pages/Documents.razor to display user's uploaded documents with title, category, upload date, file size
-- [ ] T017 [US1] Add document upload form to Documents.razor with file input, title, category dropdown, description, project selection, tags fields
+- [X] T010 [P] [US1] Create IDocumentService interface in ContosoDashboard/Services/IDocumentService.cs with UploadAsync, GetUserDocumentsAsync, GetProjectDocumentsAsync methods
+- [X] T011 [P] [US1] Create DocumentService implementation in ContosoDashboard/Services/DocumentService.cs implementing IDocumentService with upload logic, file validation, storage quota checks
+- [X] T012 [US1] Create IQuotaService interface in ContosoDashboard/Services/IQuotaService.cs with CanUploadAsync, GetUserStorageUsedAsync, GetUserStorageQuotaAsync, GetTotalStorageUsedAsync methods
+- [X] T013 [US1] Create QuotaService implementation in ContosoDashboard/Services/QuotaService.cs implementing IQuotaService with quota validation logic
+- [X] T014 [US1] Create DocumentController in ContosoDashboard/Controllers/DocumentController.cs with POST /api/documents/upload endpoint for file upload
+- [X] T015 [US1] Add authorization attributes to DocumentController for authenticated users
+- [X] T016 [US1] Create Documents.razor page in ContosoDashboard/Pages/Documents.razor to display user's uploaded documents with title, category, upload date, file size
+- [X] T017 [US1] Add document upload form to Documents.razor with file input, title, category dropdown, description, project selection, tags fields
 
 **Checkpoint**: At this point, User Story 1 should be fully functional and testable independently
 

@@ -41,6 +41,11 @@ public class User
 
     public bool InAppNotificationsEnabled { get; set; } = true;
 
+    // Storage quota fields for document management
+    public long StorageUsed { get; set; } = 0;
+
+    public long StorageQuota { get; set; } = 524288000; // 500 MB default
+
     // Navigation properties
     public virtual ICollection<TaskItem> AssignedTasks { get; set; } = new List<TaskItem>();
     public virtual ICollection<TaskItem> CreatedTasks { get; set; } = new List<TaskItem>();

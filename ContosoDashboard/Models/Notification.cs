@@ -32,6 +32,9 @@ public class Notification
     // Navigation properties
     [ForeignKey("UserId")]
     public virtual User User { get; set; } = null!;
+
+    [Required]
+    public string? Info { get; set; }
 }
 
 public enum NotificationType
@@ -42,7 +45,8 @@ public enum NotificationType
     TaskCompleted,
     TaskComment,
     ProjectUpdate,
-    SystemAnnouncement
+    SystemAnnouncement,
+    Info
 }
 
 public enum NotificationPriority

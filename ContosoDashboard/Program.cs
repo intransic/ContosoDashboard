@@ -44,6 +44,12 @@ builder.Services.AddScoped<IProjectService, ProjectService>();
 builder.Services.AddScoped<INotificationService, NotificationService>();
 builder.Services.AddScoped<IDashboardService, DashboardService>();
 
+// Register document management services
+builder.Services.AddScoped<IFileStorageService, LocalFileStorageService>();
+builder.Services.AddScoped<IQuotaService, QuotaService>();
+builder.Services.AddScoped<IDocumentService, DocumentService>();
+builder.Services.AddScoped<FileSignatureValidator>();
+
 // Add HttpContextAccessor for accessing user claims
 builder.Services.AddHttpContextAccessor();
 

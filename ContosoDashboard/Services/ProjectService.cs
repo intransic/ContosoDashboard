@@ -12,6 +12,7 @@ public interface IProjectService
     Task<bool> UpdateProjectAsync(Project project, int requestingUserId);
     Task<bool> AddProjectMemberAsync(int projectId, int userId, string role, int requestingUserId);
     Task<List<ProjectMember>> GetProjectMembersAsync(int projectId, int requestingUserId);
+    //Task<Project> GetProjectsAsync();
 }
 
 public class ProjectService : IProjectService
@@ -152,4 +153,9 @@ public class ProjectService : IProjectService
             .Where(pm => pm.ProjectId == projectId)
             .ToListAsync();
     }
+
+    //public Task<List<Project>> GetProjectsAsync()
+    //{
+    //    return Task;
+    //}
 }
