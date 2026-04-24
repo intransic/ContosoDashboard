@@ -69,7 +69,7 @@ public class ApplicationDbContext : DbContext
         // Configure Document relationships
         modelBuilder.Entity<Document>()
             .HasOne(static d => d.UploadedBy)
-            .WithMany(static u => u.AssignedTasks.Cast<Document>()) // Reuse existing navigation - documents not explicitly mapped yet
+            .WithMany() // No explicit navigation collection yet
             .HasForeignKey(static d => d.UploadedById)
             .OnDelete(DeleteBehavior.Restrict);
 
